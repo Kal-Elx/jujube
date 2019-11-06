@@ -10,6 +10,10 @@ class ActivationFunction(Enum):
     LINEAR = 4
 
 
+class CostFunction(Enum):
+    QUADRATIC_COST = 1
+
+
 def sigmoid(x: float) -> float:
     return 1/(1+exp(-x))
 

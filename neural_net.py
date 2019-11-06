@@ -12,10 +12,12 @@ class NeuralNet:
 
         assert len(architecture) >= 2 # The network needs to have at least input and output layer.
 
+        self.architecture = architecture
+
         # Initialize network.
-        self.layers = [InputLayer(size=architecture[0])]
-        for i in range(1, len(architecture)-2):
-            self.layers.append(Layer(size=architecture[-1], prev_layer_size=architecture[-2], activation_func=hl_act_func))
+        self.layers = []
+        for i in range(1, len(architecture)-1):
+            self.layers.append(Layer(size=architecture[i], prev_layer_size=architecture[i-1], activation_func=hl_act_func))
         self.layers.append(Layer(size=architecture[-1], prev_layer_size=architecture[-2], activation_func=ol_act_func))
 
 
@@ -26,10 +28,10 @@ class NeuralNet:
         :return Output for given input in the form of a list of floats of the same size as the output layer.
         """
 
-        assert len(input) == len(self.layers[0].neurons) # Input needs to be of the same size as the input layer.
+        assert len(input) == self.architecture[0] # Input needs to be of the same size as the input layer.
 
         prev_layer_output = input
-        for layer in self.layers[1:]:
+        for layer in self.layers:
             curr_layer_output = []
             for neuron in layer.neurons:
                 curr_layer_output.append(neuron.exec(prev_layer_output))

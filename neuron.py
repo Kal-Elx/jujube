@@ -13,14 +13,14 @@ class Neuron:
 
 
     def exec(self, input: List[float]) -> float:
-        return self.activation_func(sum(input[i]*self.weights[i] for i in range(len(input))) + self.bias)
+        return self.activation_func(np.dot(self.weights, input) + self.bias)
 
 
     def get_activation_func(self, activation_func: ActivationFunction) -> Callable:
         if activation_func == ActivationFunction.SIGMOID:
             return sigmoid
         elif activation_func == ActivationFunction.TANH:
-            return tanh
+            return np.tanh
         elif activation_func == ActivationFunction.RELU:
             return relu
         elif activation_func == ActivationFunction.LINEAR:
