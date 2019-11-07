@@ -10,7 +10,6 @@ class NeuralNet:
         :param hl_act_func: Activation function for the hidden layers.
         :param ol_act_func: Activation function for the output layer.
         """
-
         # Check if the network have at least input and output layer.
         assert len(architecture) >= 2
 
@@ -34,7 +33,6 @@ class NeuralNet:
         :param input: Input to the network in the form of a list of floats of the same size as the input layer.
         :return Output for given input in the form of a list of floats of the same size as the output layer.
         """
-
         # Check if input is of the same size as the input layer.
         assert len(input) == self.architecture[0]
 
