@@ -13,6 +13,11 @@ class Neuron:
         self.bias: float = np.random.randn(1, 1)[0][0]
         self.weights: List[float] = [x[0] for x in np.random.randn(prev_layer_size, 1)]
         self.activation_func: Callable = get_activation_func(activation_func=activation_func)
+        self.activation_func_prime: Callable = get_activation_func_prime(activation_func=activation_func)
+        self.activation: float = 0
+        self.z: float = 0
 
     def exec(self, input: List[float]) -> float:
-        return self.activation_func(np.dot(self.weights, input) + self.bias)
+        self.z = np.dot(self.weights, input) + self.bias
+        self.activation = self.activation_func(self.z)
+        return self.activation
