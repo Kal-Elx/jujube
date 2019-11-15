@@ -88,7 +88,7 @@ class NeuralNet:
             for j, mini_batch in enumerate(iterable=mini_batches, start=1):
                 self.gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size)
 
-                if self.print_progress:
+                if self.print_progress and j % 100 == 0:
                     print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
 
         if self.print_progress:
