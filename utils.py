@@ -2,6 +2,7 @@ from enum import Enum
 import numpy as np
 from typing import List, Tuple, Callable
 from random import shuffle
+import warnings
 
 
 class ActivationFunction(Enum):
@@ -11,40 +12,34 @@ class ActivationFunction(Enum):
     LINEAR = 4
 
 
-def get_activation_func(activation_func: ActivationFunction) -> Callable:
+def get_activation_func(activation_func: ActivationFunction) -> Tuple[Callable, Callable]:
+    """
+    Returns the corresponding activation function and its derivative for the given enum.
+    :param activation_func: Desired activation function.
+    :return: Tuple of desired activation function and its derivative.
+    """
     if activation_func == ActivationFunction.SIGMOID:
-        return sigmoid
+        return sigmoid, sigmoid_prime
     elif activation_func == ActivationFunction.TANH:
-        return np.tanh
+        return np.tanh, tanh_prime
     elif activation_func == ActivationFunction.RELU:
-        return relu
+        return relu, relu_prime
     elif activation_func == ActivationFunction.LINEAR:
-        return linear
-
-
-def get_activation_func_prime(activation_func: ActivationFunction) -> Callable:
-    if activation_func == ActivationFunction.SIGMOID:
-        return sigmoid_prime
-    elif activation_func == ActivationFunction.TANH:
-        return tanh_prime
-    elif activation_func == ActivationFunction.RELU:
-        return relu_prime
-    elif activation_func == ActivationFunction.LINEAR:
-        return linear_prime
+        return linear, linear_prime
 
 
 class CostFunction(Enum):
     QUADRATIC_COST = 1
 
 
-def get_cost_func(cost_func: CostFunction) -> Callable:
+def get_cost_func(cost_func: CostFunction) -> Tuple[Callable, Callable]:
+    """
+    Returns the corresponding cost function and its derivative for the given enum.
+    :param cost_func: Desired cost function.
+    :return: Tuple of desired activation function and its derivative.
+    """
     if cost_func == CostFunction.QUADRATIC_COST:
-        return quadratic_cost
-
-
-def get_cost_func_prime(cost_func: CostFunction) -> Callable:
-    if cost_func == CostFunction.QUADRATIC_COST:
-        return quadratic_cost_prime
+        return quadratic_cost, quadratic_cost_prime
 
 
 def sigmoid(x: float) -> float:
@@ -57,23 +52,17 @@ def sigmoid_prime(x: float) -> float:
 
 def tanh_prime(x: float) -> float:
     # TODO: Implement
-    return 0.0
+    pass
 
 
 def relu(x: float) -> float:
-    if x > 1:
-        return 1
-    elif x < 0:
-        return 0
-    else:
-        return x
+    # TODO: Implement
+    pass
 
 
 def relu_prime(x: float) -> float:
-    if x > 1 or x < 0:
-        return 0
-    else:
-        return 1
+    # TODO: Implement
+    pass
 
 
 def linear(x: float) -> float:
@@ -84,15 +73,10 @@ def linear_prime(x: float) -> float:
     return 1
 
 
-def quadratic_cost(a: List[float], y: List[float]) -> float:
-    assert len(y) == len(a)
-    return sum(x ** 2 for x in [y[i] - a[i] for i in range(len(a))])
+def quadratic_cost(a: float, y: float) -> float:
+    # TODO: Implement
+    pass
 
 
-def quadratic_cost_prime(a: List[float], y: List[float]) -> List[float]:
-    assert len(y) == len(a)
-    return [a-y for a, y in zip(a, y)]
-
-
-def transpose(m: List[List[float]]) -> List[List[float]]:
-    return [list(e) for e in zip(*m)]
+def quadratic_cost_prime(a: np.ndarray, y: np.ndarray) -> np.ndarray:
+    return a - y
