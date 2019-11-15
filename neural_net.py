@@ -74,6 +74,10 @@ class NeuralNet:
         assert isinstance(training_set[0][0], np.ndarray), "Training data is given in the wrong format."
         assert isinstance(training_set[0][1], np.ndarray), "Training data is given in the wrong format."
 
+        # Save current time for measuring the time of the training process.
+        start_time = time.time()
+
+        # Perform stochastic gradient descent.
         for i in range(epochs):
 
             # Divide the training set into mini batches.
@@ -81,11 +85,14 @@ class NeuralNet:
             mini_batches = [training_set[i:i + mini_batch_size] for i in range(0, len(training_set), mini_batch_size)]
 
             # Update weights and biases for every mini batch.
-            for mini_batch in mini_batches:
+            for j, mini_batch in enumerate(iterable=mini_batches, start=1):
                 self.gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size)
 
-            if self.print_progress:
-                print("Completed epoch: {0}".format(i + 1))
+                if self.print_progress:
+                    print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
+
+        if self.print_progress:
+            print("\nTraining time: {0} sec".format(round(time.time()-start_time)))
 
     def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float) -> None:
         """

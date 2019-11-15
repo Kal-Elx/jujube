@@ -3,6 +3,7 @@ import numpy as np
 from typing import List, Tuple, Callable
 from random import shuffle
 import warnings
+import time
 
 
 class ActivationFunction(Enum):
