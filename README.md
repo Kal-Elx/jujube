@@ -11,6 +11,10 @@ TODO
 ### Architecture
 - Fully connected
 
+### Training algorithms
+- Stochastic gradient descent
+- Backpropagation
+
 ### Activation functions
 - Sigmoid
 - Tanh (Upcoming)
