@@ -31,4 +31,4 @@ def mnist(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: in
     print("\nAccuracy: {0}%".format((correct / len(test_data) * 100)))
 
 if __name__ == "__main__":
-    mnist(hidden_layer_architecture=[32, 32], epochs=30, mini_batch_size=10, learning_rate=3.0)
+    mnist(hidden_layer_architecture=[32, 32], epochs=30, mini_batch_size=10, learning_rate=3.0, training_examples=10000, test_examples=1000)

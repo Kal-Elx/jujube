@@ -92,7 +92,7 @@ class NeuralNet:
                     print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
 
         if self.print_progress:
-            print("\nTraining time: {0} sec".format(round(time.time()-start_time)))
+            print("\nTraining time: {0} min {1} sec".format(round((time.time()-start_time) // 60), round(time.time()-start_time) % 60))
 
     def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float) -> None:
         """
