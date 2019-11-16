@@ -5,11 +5,12 @@ class NeuralNet:
 
     def __init__(self, architecture: List[int], hl_act_func: ActivationFunction = ActivationFunction.SIGMOID,
                  ol_act_func: ActivationFunction = ActivationFunction.SIGMOID,
-                 cost_func: CostFunction = CostFunction.QUADRATIC_COST, print_progress: bool = False):
+                 cost_func: CostFunction = CostFunction.QUADRATIC_COST):
         """
         :param architecture: Number of neurons in each net. [input layer, hidden layer, ..., output layer].
         :param hl_act_func: Activation function for the hidden layers.
         :param ol_act_func: Activation function for the output layer.
+        :param cost_func: Cost function for the network.
         """
         # Test given architecture.
         assert len(architecture) >= 2, "The network needs two have at least two layers."
@@ -33,8 +34,6 @@ class NeuralNet:
         self.ol_act_func, self.ol_act_func_prime = get_activation_func(activation_func=ol_act_func)
         self.cost_func, self.cost_func_prime = get_cost_func(cost_func=cost_func)
 
-        self.print_progress = print_progress
-
     def exec(self, input: np.ndarray) -> np.ndarray:
         """
         Executes the neural net with the given input.
@@ -46,7 +45,7 @@ class NeuralNet:
         assert len(input) == self.architecture[0], "Input is of different size than the input layer."
         assert isinstance(input, np.ndarray), "Input is given in the wrong format."
 
-        # Calculate the activations int the network in a feedforward manner.
+        # Calculate the activations in the network in a feedforward manner.
         self.activations[0] = input
         for i, (w, b) in enumerate(iterable=zip(self.weights, self.biases), start=1):
             if i == len(self.architecture): # Output layer
@@ -60,13 +59,14 @@ class NeuralNet:
         return self.activations[-1]
 
     def train(self, training_set: List[Tuple[np.ndarray, np.ndarray]], epochs: int, mini_batch_size: int,
-              learning_rate: float) -> None:
+              learning_rate: float, print_progress: bool = False) -> None:
         """
         Train the network on the given training data using stochastic gradient descent.
         :param training_set: Given training data.
         :param epochs: Number of epochs (iterations) to apply stochastic gradient descent.
         :param mini_batch_size: Number of training examples in each mini batch.
         :param learning_rate: The learning rate for stochastic gradient descent.
+        :param print_progress: Print the progress of the learning process.
         """
         # Test format of training data.
         assert isinstance(training_set, List), "Training data is given in the wrong format."
@@ -88,10 +88,10 @@ class NeuralNet:
             for j, mini_batch in enumerate(iterable=mini_batches, start=1):
                 self.gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size)
 
-                if self.print_progress and j % 100 == 0:
+                if print_progress and j % 100 == 0:
                     print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
 
-        if self.print_progress:
+        if print_progress:
             print("\nTraining time: {0} min {1} sec".format(round((time.time()-start_time) // 60), round(time.time()-start_time) % 60))
 
     def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float) -> None:
