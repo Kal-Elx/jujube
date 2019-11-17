@@ -47,6 +47,25 @@ def get_cost_func(cost_func: CostFunction) -> Tuple[Callable, Callable]:
         return cross_entropy, cross_entropy_prime
 
 
+class RegularizationTechnique(Enum):
+    L1 = 1
+    L2 = 2
+
+
+def get_regularization_technique(regularization_technique: RegularizationTechnique) -> Callable:
+    """
+    Returns a corresponding function for the given enum.
+    :param regularization_technique: Desired regularization technique.
+    :return: Desired regularization function.
+    """
+    if regularization_technique == None:
+        return no_regularization_technique
+    elif regularization_technique == RegularizationTechnique.L1:
+        return L1
+    elif regularization_technique == RegularizationTechnique.L2:
+        return L2
+
+
 def sigmoid(x: float) -> float:
     return 1.0 / (1.0 + np.exp(-x))
 
@@ -101,3 +120,15 @@ def no_ol_act_func_prime(arg):
     :return: 1 (the multiplication property).
     """
     return 1
+
+
+def no_regularization_technique(w: float) -> float:
+    return 0.0
+
+
+def L1(w: float) -> float:
+    return np.sign(w)
+
+
+def L2(w: float) -> float:
+    return w

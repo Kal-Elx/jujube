@@ -2,13 +2,14 @@ from neural_net import *
 import mnist_loader
 
 def new(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: int, learning_rate: float,
-        training_data: List[Tuple[np.ndarray, np.ndarray]]) -> NeuralNet:
+        training_data: List[Tuple[np.ndarray, np.ndarray]], regularization_param: float = 0.0) -> NeuralNet:
     # Initialize the neural net.
-    nn = NeuralNet([784] + hidden_layer_architecture + [10], cost_func=CostFunction.CROSS_ENTROPY)
+    nn = NeuralNet([784] + hidden_layer_architecture + [10], cost_func=CostFunction.CROSS_ENTROPY,
+                   regularization_technique=RegularizationTechnique.L2)
 
     # Train the neural net.
     nn.train(training_set=training_data, epochs=epochs, mini_batch_size=mini_batch_size, learning_rate=learning_rate,
-             print_progress=True)
+             regularization_param=regularization_param, print_progress=True)
 
     # Save the neural net to file.
     nn.save('examples/mnist-{0}.nn'.format(str(hidden_layer_architecture)).replace('[', '').replace(']', '')
@@ -43,10 +44,10 @@ if __name__ == "__main__":
     test_data = list(test_data)
 
     # Create new neural net or load an existing one.
-    nn = new(hidden_layer_architecture=[100], epochs=30, mini_batch_size=10, learning_rate=3.0,
-             training_data=training_data)
+    nn = new(hidden_layer_architecture=[100], epochs=60, mini_batch_size=10, learning_rate=0.1,
+             regularization_param=5.0, training_data=training_data)
     #nn = NeuralNet.load('examples/mnist-30.nn')
 
     # Test the neural net.
     test(nn=nn, test_data=test_data)
-    print("Average cost: {0}".format(nn.test(training_data)))
+    #print("Average cost: {0}".format(nn.test(training_data[:1000])))

@@ -17,13 +17,17 @@ TODO
 
 ### Activation functions
 - Sigmoid
-- Tanh (Upcoming)
-- Relu (Upcoming)
+- Tanh (Coming)
+- Relu (Coming)
 - Linear
 
 ### Cost functions
 - Quadratic cost
 - Cross-entropy
+
+### Regularization techniques
+- L1
+- L2
 
 ## Third-party libraries
 - numpy

@@ -5,7 +5,8 @@ class NeuralNet:
 
     def __init__(self, architecture: List[int], hl_act_func: ActivationFunction = ActivationFunction.SIGMOID,
                  ol_act_func: ActivationFunction = ActivationFunction.SIGMOID,
-                 cost_func: CostFunction = CostFunction.QUADRATIC_COST):
+                 cost_func: CostFunction = CostFunction.QUADRATIC_COST,
+                 regularization_technique: RegularizationTechnique = None):
         """
         :param architecture: Number of neurons in each net. [input layer, hidden layer, ..., output layer].
         :param hl_act_func: Activation function for the hidden layers.
@@ -38,6 +39,7 @@ class NeuralNet:
         self.cost_func, self.cost_func_prime = get_cost_func(cost_func=cost_func)
         if cost_func == CostFunction.CROSS_ENTROPY:
             self.ol_act_func_prime = no_ol_act_func_prime
+        self.regularization_func = get_regularization_technique(regularization_technique=regularization_technique)
 
     def save(self, file: str) -> None:
         """
@@ -84,7 +86,7 @@ class NeuralNet:
         return self.activations[-1]
 
     def train(self, training_set: List[Tuple[np.ndarray, np.ndarray]], epochs: int, mini_batch_size: int,
-              learning_rate: float, print_progress: bool = False) -> None:
+              learning_rate: float, regularization_param: float = 0.0, print_progress: bool = False) -> None:
         """
         Train the network on the given training data using stochastic gradient descent.
         :param training_set: Given training data.
@@ -111,7 +113,8 @@ class NeuralNet:
 
             # Update weights and biases for every mini batch.
             for j, mini_batch in enumerate(iterable=mini_batches, start=1):
-                self.gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size)
+                self.gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size,
+                                      regularization_param=regularization_param / len(mini_batches))
 
                 if print_progress and j % 100 == 0:
                     print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
@@ -137,7 +140,8 @@ class NeuralNet:
             total_cost += self.cost_func(self.exec(x), y)
         return total_cost / len(test_set)
 
-    def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float) -> None:
+    def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float,
+                         regularization_param: float) -> None:
         """
         Applies gradient descent to the weights and biases in the network.
         :param batch: Given training data.
@@ -153,8 +157,9 @@ class NeuralNet:
             gradient_weights = [gw + cw for gw, cw in zip(gradient_weights, change_weights)]
             gradient_biases = [gb + cb for gb, cb in zip(gradient_biases, change_biases)]
 
-        # Update weights and biases according to the obtained gradients.
-        self.weights = [w - learning_rate * gw for w, gw in zip(self.weights, gradient_weights)]
+        # Update weights and biases according to the obtained gradients using the specified regularization technique.
+        self.weights = [w - learning_rate * regularization_param * self.regularization_func(w) - learning_rate * gw
+                        for w, gw in zip(self.weights, gradient_weights)]
         self.biases = [b - learning_rate * gb for b, gb in zip(self.biases, gradient_biases)]
 
     def backpropagation(self, x: List[float], y: List[float]) -> (List[float], List[List[float]]):
