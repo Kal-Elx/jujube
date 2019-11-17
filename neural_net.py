@@ -28,7 +28,8 @@ class NeuralNet:
         self.architecture = architecture
 
         # Initialize network.
-        self.weights = [np.random.randn(a, b) for a, b in zip(self.architecture[1:], self.architecture[:-1])]
+        self.weights = [np.random.normal(0.0, np.sqrt(b), (a, b)) for a, b in zip(self.architecture[1:],
+                                                                                  self.architecture[:-1])]
         self.biases = [np.random.randn(a, 1) for a in self.architecture[1:]]
         self.zs = [np.empty((a, 1)) for a in self.architecture]
         self.activations = [np.empty((a, 1)) for a in self.architecture]
