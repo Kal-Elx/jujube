@@ -4,9 +4,6 @@ Implementing my own neural net while reading http://neuralnetworksanddeeplearnin
 ## Instructions
 TODO
 
-## Data sets
-- MNIST database (source: [MichalDanielDobrzanski](https://github.com/MichalDanielDobrzanski/DeepLearningPython35))
-
 ## Features
 ### Architecture
 - Fully connected
@@ -28,6 +25,9 @@ TODO
 ### Regularization techniques
 - L1
 - L2
+
+## Data sets
+- MNIST database (source: [MichalDanielDobrzanski](https://github.com/MichalDanielDobrzanski/DeepLearningPython35))
 
 ## Third-party libraries
 - numpy

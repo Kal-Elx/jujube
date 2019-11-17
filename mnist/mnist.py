@@ -44,7 +44,7 @@ if __name__ == "__main__":
     test_data = list(test_data)
 
     # Create new neural net or load an existing one.
-    nn = new(hidden_layer_architecture=[100], epochs=60, mini_batch_size=10, learning_rate=0.1,
+    nn = new(hidden_layer_architecture=[100], epochs=5, mini_batch_size=10, learning_rate=0.1,
              regularization_param=5.0, training_data=training_data)
     #nn = NeuralNet.load('examples/mnist-30.nn')
 
