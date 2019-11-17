@@ -32,6 +32,7 @@ def get_activation_func(activation_func: ActivationFunction) -> Tuple[Callable, 
 
 class CostFunction(Enum):
     QUADRATIC_COST = 1
+    CROSS_ENTROPY = 2
 
 
 def get_cost_func(cost_func: CostFunction) -> Tuple[Callable, Callable]:
@@ -42,6 +43,8 @@ def get_cost_func(cost_func: CostFunction) -> Tuple[Callable, Callable]:
     """
     if cost_func == CostFunction.QUADRATIC_COST:
         return quadratic_cost, quadratic_cost_prime
+    elif cost_func == CostFunction.CROSS_ENTROPY:
+        return cross_entropy, cross_entropy_prime
 
 
 def sigmoid(x: float) -> float:
@@ -76,9 +79,25 @@ def linear_prime(x: float) -> float:
 
 
 def quadratic_cost(a: float, y: float) -> float:
-    # TODO: Implement
-    pass
+    return (1.0/2.0)*np.linalg.norm(a-y)**2
 
 
 def quadratic_cost_prime(a: np.ndarray, y: np.ndarray) -> np.ndarray:
     return a - y
+
+
+def cross_entropy(a: np.ndarray, y: np.ndarray) -> np.ndarray:
+    return np.sum(np.nan_to_num(-y * np.log(a) - (1 - y) * np.log(1 - a)))
+
+
+def cross_entropy_prime(a: np.ndarray, y: np.ndarray) -> np.ndarray:
+    return a - y
+
+
+def no_ol_act_func_prime(arg):
+    """
+    Used in Equation 1 in backpropagation when the cost function is cross-entropy.
+    :param arg: Arbitrary argument.
+    :return: 1 (the multiplication property).
+    """
+    return 1

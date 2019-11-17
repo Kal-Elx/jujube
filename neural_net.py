@@ -16,12 +16,15 @@ class NeuralNet:
         assert len(architecture) >= 2, "The network needs two have at least two layers."
         assert not any(e == 0 for e in architecture), "The network can not have layers with zero neurons."
 
-        # Issue warning for using linear activation function.
+        # Issue warnings.
         if hl_act_func == ActivationFunction.LINEAR:
             warnings.warn("Linear function is not recommended as activation function in hidden layers.")
+        if cost_func == CostFunction.CROSS_ENTROPY and ol_act_func != ActivationFunction.SIGMOID:
+            warnings.warn("Cross-entropy is not recommended as cost function when activation function for the output "
+                          "layer is sigmoid.")
 
         # Save information about the network´s architecture.
-        self.architecture: List[int] = architecture
+        self.architecture = architecture
 
         # Initialize network.
         self.weights = [np.random.randn(a, b) for a, b in zip(self.architecture[1:], self.architecture[:-1])]
@@ -33,6 +36,28 @@ class NeuralNet:
         self.hl_act_func, self.hl_act_func_prime = get_activation_func(activation_func=hl_act_func)
         self.ol_act_func, self.ol_act_func_prime = get_activation_func(activation_func=ol_act_func)
         self.cost_func, self.cost_func_prime = get_cost_func(cost_func=cost_func)
+        if cost_func == CostFunction.CROSS_ENTROPY:
+            self.ol_act_func_prime = no_ol_act_func_prime
+
+    def save(self, file: str) -> None:
+        """
+        Save the neural net to file.
+        :param file: The desired path and name of the file.
+        """
+        filehandler = open(file, 'wb')
+        pickle.dump(self.__dict__, filehandler)
+
+    @staticmethod
+    def load(file: str) -> 'NeuralNet':
+        """
+        Load a neural net from file.
+        :param file: The path and name of the file.
+        :return: An instance of the neural net.
+        """
+        filehandler = open(file, 'rb')
+        nn = NeuralNet.__new__(NeuralNet)
+        nn.__dict__.update(pickle.load(filehandler))
+        return nn
 
     def exec(self, input: np.ndarray) -> np.ndarray:
         """
@@ -94,25 +119,23 @@ class NeuralNet:
         if print_progress:
             print("\nTraining time: {0} min {1} sec".format(round((time.time()-start_time) // 60), round(time.time()-start_time) % 60))
 
-    def save(self, file: str) -> None:
+    def test(self, test_set: List[Tuple[np.ndarray, np.ndarray]]) -> float:
         """
-        Save the neural net to file.
-        :param file: The desired path and name of the file.
+        Computes the average cost of the given test examples.
+        :param test_set: Given test data.
+        :return: Average cost of test examples.
         """
-        filehandler = open(file, 'wb')
-        pickle.dump(self.__dict__, filehandler)
+        # Test format of test data.
+        assert isinstance(test_set, List), "Test data is given in the wrong format."
+        assert isinstance(test_set[0], Tuple), "Test data is given in the wrong format."
+        assert isinstance(test_set[0][0], np.ndarray), "Test data is given in the wrong format."
+        assert isinstance(test_set[0][1], np.ndarray), "Test data is given in the wrong format."
 
-    @staticmethod
-    def load(file: str) -> 'NeuralNet':
-        """
-        Load a neural net from file.
-        :param file: The path and name of the file.
-        :return: An instance of the neural net.
-        """
-        filehandler = open(file, 'rb')
-        nn = NeuralNet.__new__(NeuralNet)
-        nn.__dict__.update(pickle.load(filehandler))
-        return nn
+        # Compute the average cost.
+        total_cost = 0.0
+        for x, y in test_set:
+            total_cost += self.cost_func(self.exec(x), y)
+        return total_cost / len(test_set)
 
     def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float) -> None:
         """

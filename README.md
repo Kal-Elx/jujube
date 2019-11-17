@@ -23,6 +23,7 @@ TODO
 
 ### Cost functions
 - Quadratic cost
+- Cross-entropy
 
 ## Third-party libraries
 - numpy
