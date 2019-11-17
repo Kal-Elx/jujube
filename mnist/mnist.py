@@ -1,14 +1,8 @@
 from neural_net import *
 import mnist_loader
 
-def mnist(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: int, learning_rate: float,
-          training_examples: int = 50000, test_examples: int = 10000) -> None:
-
-    # Prepare the data set.
-    training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
-    training_data = list(training_data)[:training_examples]
-    test_data = list(test_data)[:test_examples]
-
+def new(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: int, learning_rate: float,
+        training_data: List[Tuple[np.ndarray, np.ndarray]]) -> NeuralNet:
     # Initialize the neural net.
     nn = NeuralNet([784] + hidden_layer_architecture + [10])
 
@@ -16,6 +10,14 @@ def mnist(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: in
     nn.train(training_set=training_data, epochs=epochs, mini_batch_size=mini_batch_size, learning_rate=learning_rate,
              print_progress=True)
 
+    # Save the neural net to file.
+    nn.save('examples/mnist-{0}.nn'.format(str(hidden_layer_architecture)).replace('[', '').replace(']', '').replace(',', '')
+            .replace(' ', '-'))
+
+    return nn
+
+
+def test(nn: NeuralNet, test_data: List[Tuple[np.ndarray, np.ndarray]]):
     # Test the neural net.
     correct = 0.0
     print()
@@ -31,5 +33,19 @@ def mnist(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: in
 
     print("\nAccuracy: {0}%".format((correct / len(test_data) * 100)))
 
+
 if __name__ == "__main__":
-    mnist(hidden_layer_architecture=[64, 32, 16], epochs=30, mini_batch_size=10, learning_rate=3.0)
+
+    # Prepare the data set.
+    training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
+    training_data = list(training_data)
+    validation_data = list(validation_data)
+    test_data = list(test_data)
+
+    # Create new neural net or load an existing one.
+    nn = new(hidden_layer_architecture=[30], epochs=30, mini_batch_size=10, learning_rate=3.0,
+             training_data=training_data)
+    #nn = NeuralNet.load('examples/mnist-30.nn')
+
+    # Test the neural net.
+    test(nn=nn, test_data=test_data)

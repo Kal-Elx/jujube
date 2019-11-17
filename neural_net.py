@@ -94,6 +94,26 @@ class NeuralNet:
         if print_progress:
             print("\nTraining time: {0} min {1} sec".format(round((time.time()-start_time) // 60), round(time.time()-start_time) % 60))
 
+    def save(self, file: str) -> None:
+        """
+        Save the neural net to file.
+        :param file: The desired path and name of the file.
+        """
+        filehandler = open(file, 'wb')
+        pickle.dump(self.__dict__, filehandler)
+
+    @staticmethod
+    def load(file: str) -> 'NeuralNet':
+        """
+        Load a neural net from file.
+        :param file: The path and name of the file.
+        :return: An instance of the neural net.
+        """
+        filehandler = open(file, 'rb')
+        nn = NeuralNet.__new__(NeuralNet)
+        nn.__dict__.update(pickle.load(filehandler))
+        return nn
+
     def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float) -> None:
         """
         Applies gradient descent to the weights and biases in the network.
