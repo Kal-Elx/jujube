@@ -10,8 +10,7 @@ import time
 class ActivationFunction(Enum):
     SIGMOID = 1
     TANH = 2
-    RELU = 3
-    LINEAR = 4
+    LINEAR = 3
 
 
 def get_activation_func(activation_func: ActivationFunction) -> Tuple[Callable, Callable]:
@@ -24,8 +23,6 @@ def get_activation_func(activation_func: ActivationFunction) -> Tuple[Callable, 
         return sigmoid, sigmoid_prime
     elif activation_func == ActivationFunction.TANH:
         return np.tanh, tanh_prime
-    elif activation_func == ActivationFunction.RELU:
-        return relu, relu_prime
     elif activation_func == ActivationFunction.LINEAR:
         return linear, linear_prime
 
@@ -76,16 +73,6 @@ def sigmoid_prime(x: float) -> float:
 
 def tanh_prime(x: float) -> float:
     return 1 - np.tanh(x) ** 2
-
-
-def relu(x: float) -> float:
-    # TODO: Implement
-    pass
-
-
-def relu_prime(x: float) -> float:
-    # TODO: Implement
-    pass
 
 
 def linear(x: float) -> float:

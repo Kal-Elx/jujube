@@ -9,13 +9,12 @@ TODO
 - Fully connected
 
 ### Training algorithms
-- Stochastic gradient descent
+- Stochastic gradient descent with momentum
 - Backpropagation
 
 ### Activation functions
 - Sigmoid
 - Tanh
-- Relu (Coming)
 - Linear
 
 ### Cost functions

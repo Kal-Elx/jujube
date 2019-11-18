@@ -20,9 +20,9 @@ class NeuralNet:
         # Issue warnings.
         if hl_act_func == ActivationFunction.LINEAR:
             warnings.warn("Linear function is not recommended as activation function in hidden layers.")
-        if cost_func == CostFunction.CROSS_ENTROPY and ol_act_func != ActivationFunction.SIGMOID:
+        if cost_func == CostFunction.CROSS_ENTROPY and ol_act_func == ActivationFunction.LINEAR:
             warnings.warn("Cross-entropy is not recommended as cost function when activation function for the output "
-                          "layer is sigmoid.")
+                          "layer is linear.")
 
         # Save information about the network´s architecture.
         self.architecture = architecture
@@ -41,6 +41,10 @@ class NeuralNet:
         if cost_func == CostFunction.CROSS_ENTROPY:
             self.ol_act_func_prime = no_ol_act_func_prime
         self.regularization_func = get_regularization_technique(regularization_technique=regularization_technique)
+
+        # Initialize momentum variables.
+        self.vws = [np.zeros((a, b)) for a, b in zip(self.architecture[1:], self.architecture[:-1])]
+        self.vbs = [np.zeros((a, 1)) for a in self.architecture[1:]]
 
     def save(self, file: str) -> None:
         """
@@ -87,13 +91,16 @@ class NeuralNet:
         return self.activations[-1]
 
     def train(self, training_set: List[Tuple[np.ndarray, np.ndarray]], epochs: int, mini_batch_size: int,
-              learning_rate: float, regularization_param: float = 0.0, print_progress: bool = False) -> None:
+              learning_rate: float, regularization: float = 0.0, momentum_coefficient: float = 0.0,
+              print_progress: bool = False) -> None:
         """
         Train the network on the given training data using stochastic gradient descent.
         :param training_set: Given training data.
         :param epochs: Number of epochs (iterations) to apply stochastic gradient descent.
         :param mini_batch_size: Number of training examples in each mini batch.
         :param learning_rate: The learning rate for stochastic gradient descent.
+        :param regularization: Regularization parameter. Use 0.0 for no regularization.
+        :param momentum_coefficient: Momentum co-efficient for the momentum technique. Use 0.0 for no momentum.
         :param print_progress: Print the progress of the learning process.
         """
         # Test format of training data.
@@ -115,7 +122,8 @@ class NeuralNet:
             # Update weights and biases for every mini batch.
             for j, mini_batch in enumerate(iterable=mini_batches, start=1):
                 self.gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size,
-                                      regularization_param=regularization_param / len(mini_batches))
+                                      regularization=regularization / len(mini_batches),
+                                      momentum_coefficient=momentum_coefficient)
 
                 if print_progress and j % 100 == 0:
                     print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
@@ -142,11 +150,13 @@ class NeuralNet:
         return total_cost / len(test_set)
 
     def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float,
-                         regularization_param: float) -> None:
+                         regularization: float, momentum_coefficient: float) -> None:
         """
         Applies gradient descent to the weights and biases in the network.
         :param batch: Given training data.
         :param learning_rate: The learning rate for stochastic gradient descent.
+        :param regularization: Regularization parameter.
+        :param momentum_coefficient: Momentum co-efficient for the momentum technique.
         """
         # Initialize the gradients.
         gradient_weights = [np.zeros((a, b)) for a, b in zip(self.architecture[1:], self.architecture[:-1])]
@@ -158,10 +168,12 @@ class NeuralNet:
             gradient_weights = [gw + cw for gw, cw in zip(gradient_weights, change_weights)]
             gradient_biases = [gb + cb for gb, cb in zip(gradient_biases, change_biases)]
 
-        # Update weights and biases according to the obtained gradients using the specified regularization technique.
-        self.weights = [w - learning_rate * regularization_param * self.regularization_func(w) - learning_rate * gw
-                        for w, gw in zip(self.weights, gradient_weights)]
-        self.biases = [b - learning_rate * gb for b, gb in zip(self.biases, gradient_biases)]
+        # Update weights and biases according to the obtained gradients.
+        self.vws = [momentum_coefficient * vw - learning_rate * gw for vw, gw in zip(self.vws, gradient_weights)]
+        self.weights = [w - learning_rate * regularization * self.regularization_func(w) + vw
+                        for w, vw in zip(self.weights, self.vws)]
+        self.vbs = [momentum_coefficient * vb - learning_rate * gb for vb, gb in zip(self.vbs, gradient_biases)]
+        self.biases = [b + vb for b, vb in zip(self.biases, self.vbs)]
 
     def backpropagation(self, x: List[float], y: List[float]) -> (List[float], List[List[float]]):
         """
