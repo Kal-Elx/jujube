@@ -14,7 +14,7 @@ TODO
 
 ### Activation functions
 - Sigmoid
-- Tanh (Coming)
+- Tanh
 - Relu (Coming)
 - Linear
 

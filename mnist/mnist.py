@@ -1,6 +1,7 @@
 from neural_net import *
 import mnist_loader
 
+
 def new(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: int, learning_rate: float,
         training_data: List[Tuple[np.ndarray, np.ndarray]], regularization_param: float = 0.0) -> NeuralNet:
     # Initialize the neural net.

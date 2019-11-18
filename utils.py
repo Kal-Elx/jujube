@@ -75,8 +75,7 @@ def sigmoid_prime(x: float) -> float:
 
 
 def tanh_prime(x: float) -> float:
-    # TODO: Implement
-    pass
+    return 1 - np.tanh(x) ** 2
 
 
 def relu(x: float) -> float:
@@ -98,7 +97,7 @@ def linear_prime(x: float) -> float:
 
 
 def quadratic_cost(a: float, y: float) -> float:
-    return (1.0/2.0)*np.linalg.norm(a-y)**2
+    return (1.0 / 2.0) * np.linalg.norm(a - y) ** 2
 
 
 def quadratic_cost_prime(a: np.ndarray, y: np.ndarray) -> np.ndarray:
