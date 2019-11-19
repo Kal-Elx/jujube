@@ -1,5 +1,6 @@
-# my-neural-net
-Implementing my own neural net while reading http://neuralnetworksanddeeplearning.com/.
+# Jujube
+Jujube is a library for doing machine using neural networks.
+For instructions on how to use the library see the wiki.
 
 ## Features
 ### Architecture
