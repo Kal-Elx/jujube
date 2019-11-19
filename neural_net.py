@@ -6,12 +6,13 @@ class NeuralNet:
     def __init__(self, architecture: List[int], hl_act_func: ActivationFunction = ActivationFunction.SIGMOID,
                  ol_act_func: ActivationFunction = ActivationFunction.SIGMOID,
                  cost_func: CostFunction = CostFunction.QUADRATIC_COST,
-                 regularization_technique: RegularizationTechnique = None):
+                 regularization_technique: RegularizationTechnique = None, suppress_warnings: bool = True):
         """
         :param architecture: Number of neurons in each net. [input layer, hidden layer, ..., output layer].
         :param hl_act_func: Activation function for the hidden layers.
         :param ol_act_func: Activation function for the output layer.
         :param cost_func: Cost function for the network.
+        :param regularization_technique: Regularization technique for the network.
         """
         # Test given architecture.
         assert len(architecture) >= 2, "The network needs two have at least two layers."
@@ -29,7 +30,7 @@ class NeuralNet:
 
         # Initialize network.
         self.weights = [np.random.normal(0.0, 1 / np.sqrt(b), (a, b)) for a, b in zip(self.architecture[1:],
-                                                                                  self.architecture[:-1])]
+                                                                                      self.architecture[:-1])]
         self.biases = [np.random.randn(a, 1) for a in self.architecture[1:]]
         self.zs = [np.empty((a, 1)) for a in self.architecture]
         self.activations = [np.empty((a, 1)) for a in self.architecture]
@@ -66,25 +67,25 @@ class NeuralNet:
         nn.__dict__.update(pickle.load(filehandler))
         return nn
 
-    def exec(self, input: np.ndarray) -> np.ndarray:
+    def exec(self, x: np.ndarray) -> np.ndarray:
         """
         Executes the neural net with the given input.
-        :param input: Vertical numpy array of the same size as the number of neurons in the input layer.
-        :return Output for given input in the form of a vertical numpy array of the same size as the number of neurons
-                in the output layer.
+        :param x: Input in the form of a vertical array of the same size as the number of neurons in the input layer.
+        :return Output for given input in the form of a vertical array of the same size as the number of neurons in the
+                output layer.
         """
         # Test format of input.
-        assert len(input) == self.architecture[0], "Input is of different size than the input layer."
-        assert isinstance(input, np.ndarray), "Input is given in the wrong format."
+        assert len(x) == self.architecture[0], "Input is of different size than the input layer."
+        assert isinstance(x, np.ndarray), "Input is given in the wrong format."
 
         # Calculate the activations in the network in a feedforward manner.
-        self.activations[0] = input
+        self.activations[0] = x
         for i, (w, b) in enumerate(iterable=zip(self.weights, self.biases), start=1):
-            if i == len(self.architecture): # Output layer
+            if i == len(self.architecture) - 1:  # Output layer
                 act_func = self.ol_act_func
-            else: # Hidden layer
+            else:  # Hidden layer
                 act_func = self.hl_act_func
-            self.zs[i] = np.matmul(w, self.activations[i-1]) + b
+            self.zs[i] = np.matmul(w, self.activations[i - 1]) + b
             self.activations[i] = act_func(self.zs[i])
 
         # Return activations of the output layer.
@@ -121,15 +122,16 @@ class NeuralNet:
 
             # Update weights and biases for every mini batch.
             for j, mini_batch in enumerate(iterable=mini_batches, start=1):
-                self.gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size,
-                                      regularization=regularization / len(mini_batches),
-                                      momentum_coefficient=momentum_coefficient)
+                self.__gradient_descent(batch=mini_batch, learning_rate=learning_rate / mini_batch_size,
+                                        regularization=regularization / len(mini_batches),
+                                        momentum_coefficient=momentum_coefficient)
 
                 if print_progress and j % 100 == 0:
                     print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
 
         if print_progress:
-            print("\nTraining time: {0} min {1} sec".format(round((time.time()-start_time) // 60), round(time.time()-start_time) % 60))
+            print("\nTraining time: {0} min {1} sec".format(round((time.time() - start_time) // 60),
+                                                            round(time.time() - start_time) % 60))
 
     def test(self, test_set: List[Tuple[np.ndarray, np.ndarray]]) -> float:
         """
@@ -149,8 +151,8 @@ class NeuralNet:
             total_cost += self.cost_func(self.exec(x), y)
         return total_cost / len(test_set)
 
-    def gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float,
-                         regularization: float, momentum_coefficient: float) -> None:
+    def __gradient_descent(self, batch: List[Tuple[np.ndarray, np.ndarray]], learning_rate: float,
+                           regularization: float, momentum_coefficient: float) -> None:
         """
         Applies gradient descent to the weights and biases in the network.
         :param batch: Given training data.
@@ -164,7 +166,7 @@ class NeuralNet:
 
         # Calculate the gradient of the cost function for each example in the batch.
         for x, y in batch:
-            change_weights, change_biases = self.backpropagation(x=x, y=y)
+            change_weights, change_biases = self.__backpropagation(x=x, y=y)
             gradient_weights = [gw + cw for gw, cw in zip(gradient_weights, change_weights)]
             gradient_biases = [gb + cb for gb, cb in zip(gradient_biases, change_biases)]
 
@@ -175,7 +177,7 @@ class NeuralNet:
         self.vbs = [momentum_coefficient * vb - learning_rate * gb for vb, gb in zip(self.vbs, gradient_biases)]
         self.biases = [b + vb for b, vb in zip(self.biases, self.vbs)]
 
-    def backpropagation(self, x: List[float], y: List[float]) -> (List[float], List[List[float]]):
+    def __backpropagation(self, x: np.ndarray, y: np.ndarray) -> (List[np.ndarray], List[np.ndarray]):
         """
         Calculates the gradient of the cost function with respect to the network's weights biases for the given training
         example using the four fundamental equations behind backpropagation as described in
@@ -194,16 +196,16 @@ class NeuralNet:
         # Compute the gradient for the error in each layer.
         change = None  # Save previous value.
         for l in range(len(self.architecture) - 1, 0, -1):
-            if l == len(self.architecture) - 1: # Output layer.
+            if l == len(self.architecture) - 1:  # Output layer.
                 # Equation 1.
                 change = np.multiply(self.cost_func_prime(self.activations[l], y), self.ol_act_func_prime(self.zs[l]))
-            else: # Hidden layer
+            else:  # Hidden layer
                 # Equation 2.
                 change = np.multiply(np.matmul(self.weights[l].transpose(), change), self.hl_act_func_prime(self.zs[l]))
 
             # Equation 3.
-            change_biases[l-1] = change
+            change_biases[l - 1] = change
             # Equation 4.
-            change_weights[l-1] = np.matmul(change, self.activations[l-1].transpose())
+            change_weights[l - 1] = np.matmul(change, self.activations[l - 1].transpose())
 
         return change_weights, change_biases

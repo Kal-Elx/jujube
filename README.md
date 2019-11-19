@@ -1,9 +1,6 @@
 # my-neural-net
 Implementing my own neural net while reading http://neuralnetworksanddeeplearning.com/.
 
-## Instructions
-TODO
-
 ## Features
 ### Architecture
 - Fully connected
@@ -27,6 +24,8 @@ TODO
 
 ## Data sets
 - MNIST database (source: [MichalDanielDobrzanski](https://github.com/MichalDanielDobrzanski/DeepLearningPython35))
+- Abalone (source: [UCI](http://archive.ics.uci.edu/ml/datasets/Abalone))
+- Sinus
 
 ## Third-party libraries
 - numpy

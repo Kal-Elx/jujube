@@ -21,7 +21,7 @@ def new(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: int,
 
 
 def test(nn: NeuralNet, test_data: List[Tuple[np.ndarray, np.ndarray]]):
-    # Test the neural net.
+
     correct = 0.0
     print()
     for x, y in test_data:
@@ -46,10 +46,9 @@ if __name__ == "__main__":
     test_data = list(test_data)
 
     # Create new neural net or load an existing one.
-    nn = new(hidden_layer_architecture=[30], epochs=10, mini_batch_size=10, learning_rate=0.1,
-             regularization_param=0.1, momentum_coefficient=0.9, training_data=training_data[:1000])
-    #nn = NeuralNet.load('examples/mnist-30.nn')
+    nn = new(hidden_layer_architecture=[100], epochs=30, mini_batch_size=10, learning_rate=0.1,
+             regularization_param=5.0, momentum_coefficient=0.8, training_data=training_data)
+    # nn = NeuralNet.load('examples/mnist-100.nn')
 
     # Test the neural net.
-    test(nn=nn, test_data=test_data[:100])
-    #print("Average cost: {0}".format(nn.test(training_data[:1000])))
+    test(nn=nn, test_data=test_data)

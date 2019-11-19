@@ -68,11 +68,11 @@ def sigmoid(x: float) -> float:
 
 
 def sigmoid_prime(x: float) -> float:
-    return sigmoid(x)*(1-sigmoid(x))
+    return sigmoid(x) * (1 - sigmoid(x))
 
 
 def tanh_prime(x: float) -> float:
-    return 1 - np.tanh(x) ** 2
+    return (1 - np.tanh(x) ** 2)
 
 
 def linear(x: float) -> float:
