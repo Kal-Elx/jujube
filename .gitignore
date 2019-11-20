@@ -1,3 +1,3 @@
 test/
-/mnist/mnist_test.csv
-/mnist/mnist_train.csv
+/examples/mnist/mnist_train.csv
+/examples/mnist/mnist_test.csv

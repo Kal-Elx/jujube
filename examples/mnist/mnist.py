@@ -63,7 +63,7 @@ if __name__ == "__main__":
              validation_set=test_data, regularization=5.0, momentum_coefficient=0.8, print_progress=True)
 
     # Save the neural net to file.
-    nn.save('examples/mnist-100.nn')
+    #nn.save('examples/mnist-100.nn')
 
     # Load an existing neural net.
     # nn = NeuralNet.load('examples/mnist-100.nn')
