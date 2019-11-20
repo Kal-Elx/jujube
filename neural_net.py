@@ -93,6 +93,7 @@ class NeuralNet:
 
     def train(self, training_set: List[Tuple[np.ndarray, np.ndarray]], epochs: int, mini_batch_size: int,
               learning_rate: float, regularization: float = 0.0, momentum_coefficient: float = 0.0,
+              early_stopping: bool = False, limit: int = 1, validation_set: List[Tuple[np.ndarray, np.ndarray]] = None,
               print_progress: bool = False) -> None:
         """
         Train the network on the given training data using stochastic gradient descent.
@@ -103,15 +104,27 @@ class NeuralNet:
         :param regularization: Regularization parameter. Use 0.0 for no regularization.
         :param momentum_coefficient: Momentum co-efficient for the momentum technique. Use 0.0 for no momentum.
         :param print_progress: Print the progress of the learning process.
+        :param early_stopping: Use early stopping while training. Note: will lower performance.
+        :param limit: Number of epochs allowed without improvement for early stopping.
+        :param validation_set: Held-out validation data used for early stopping.
         """
-        # Test format of training data.
+        # Test format of training and test data.
         assert isinstance(training_set, List), "Training data is given in the wrong format."
         assert isinstance(training_set[0], Tuple), "Training data is given in the wrong format."
         assert isinstance(training_set[0][0], np.ndarray), "Training data is given in the wrong format."
         assert isinstance(training_set[0][1], np.ndarray), "Training data is given in the wrong format."
+        if early_stopping:
+            assert isinstance(validation_set, List), "Test data is given in the wrong format."
+            assert isinstance(validation_set[0], Tuple), "Test data is given in the wrong format."
+            assert isinstance(validation_set[0][0], np.ndarray), "Test data is given in the wrong format."
+            assert isinstance(validation_set[0][1], np.ndarray), "Test data is given in the wrong format."
 
         # Save current time for measuring the time of the training process.
         start_time = time.time()
+
+        # Initialize variables for early stopping.
+        cost = np.inf
+        epochs_without_improvement = 0
 
         # Perform stochastic gradient descent.
         for i in range(epochs):
@@ -128,6 +141,18 @@ class NeuralNet:
 
                 if print_progress and j % 100 == 0:
                     print("Epoch: {0}/{1}, Mini batch: {2}/{3}".format(i + 1, epochs, j, len(mini_batches)))
+
+            # Early stopping
+            if early_stopping:
+                new_cost = self.test(test_set=validation_set)
+                if cost < new_cost:
+                    epochs_without_improvement += 1
+                else:
+                    cost = new_cost
+                    epochs_without_improvement = 0
+                if epochs_without_improvement >= limit:
+                    print("Early stopping after epoch {0}".format(i + 1))
+                    break
 
         if print_progress:
             print("\nTraining time: {0} min {1} sec".format(round((time.time() - start_time) // 60),

@@ -122,5 +122,3 @@ def L2(w: float) -> float:
 
 def rescale(curr_min: float, curr_max: float, new_min: float, new_max: float, x: float) -> float:
     return (x * ((new_max - new_min) / (curr_max - curr_min))) + new_min
-
-print(rescale(0.0, 255.0, 0.0, 1.0, 200.0))

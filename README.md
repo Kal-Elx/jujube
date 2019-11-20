@@ -1,14 +1,17 @@
 # Jujube
-Jujube is a library for doing machine using neural networks.
+Jujube is a library for doing machine learning using neural networks.
 For instructions on how to use the library see the wiki.
 
 ## Features
 ### Architecture
 - Fully connected
 
-### Training algorithms
-- Stochastic gradient descent with momentum
+### Training
+- Stochastic gradient descent
 - Backpropagation
+- Momentum technique
+- Regularization
+- Early stopping
 
 ### Activation functions
 - Sigmoid
@@ -24,7 +27,7 @@ For instructions on how to use the library see the wiki.
 - L2
 
 ## Data sets
-- MNIST database (source: [MichalDanielDobrzanski](https://github.com/MichalDanielDobrzanski/DeepLearningPython35))
+- MNIST database (source: [Dariel Dato-on](https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_train.csv))
 - Abalone (source: [UCI](http://archive.ics.uci.edu/ml/datasets/Abalone))
 - Sinus
 

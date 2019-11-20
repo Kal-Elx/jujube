@@ -3,23 +3,6 @@ import gzip
 from neural_net import *
 
 
-def new(hidden_layer_architecture: List[int], epochs: int, mini_batch_size: int, learning_rate: float,
-        training_data: List[Tuple[np.ndarray, np.ndarray]], regularization_param: float = 0.0,
-        momentum_coefficient: float = 0.0) -> NeuralNet:
-    # Initialize the neural net.
-    nn = NeuralNet([784] + hidden_layer_architecture + [10], cost_func=CostFunction.CROSS_ENTROPY,
-                   regularization_technique=RegularizationTechnique.L2)
-
-    # Train the neural net.
-    nn.train(training_set=training_data, epochs=epochs, mini_batch_size=mini_batch_size, learning_rate=learning_rate, print_progress=True)
-
-    # Save the neural net to file.
-    nn.save('examples/mnist-{0}.nn'.format(str(hidden_layer_architecture)).replace('[', '').replace(']', '')
-            .replace(',', '').replace(' ', '-'))
-
-    return nn
-
-
 def test(nn: NeuralNet, test_data: List[Tuple[np.ndarray, np.ndarray]]):
 
     correct = 0.0
@@ -63,18 +46,26 @@ def parse_mnist(input_file: str, output_file: str):
 if __name__ == "__main__":
 
     # Prepare the data set.
-    parse_mnist('mnist_train.csv', 'training_data.pkl.gzip') # Files to large for git
+    #parse_mnist('mnist_train.csv', 'training_data.pkl.gzip') # Files to large for git
     filehandler = gzip.open('training_data.pkl.gzip', 'rb')
     training_data = pickle.load(filehandler)
     filehandler.close()
-
-    parse_mnist('mnist_test.csv', 'test_data.pkl.gzip') # Files to large for git
+    #parse_mnist('mnist_test.csv', 'test_data.pkl.gzip') # Files to large for git
     filehandler = gzip.open('test_data.pkl.gzip', 'rb')
     test_data = pickle.load(filehandler)
     filehandler.close()
 
-    # Create new neural net or load an existing one.
-    nn = new(hidden_layer_architecture=[30], epochs=30, mini_batch_size=10, learning_rate=3.0, training_data=training_data[:1000])
+    # Initialize the neural net.
+    nn = NeuralNet([784, 30, 10], cost_func=CostFunction.CROSS_ENTROPY, regularization_technique=RegularizationTechnique.L2)
+
+    # Train the neural net.
+    nn.train(training_set=training_data[:1000], epochs=1000, mini_batch_size=10, learning_rate=3.0, early_stopping=True, limit=10,
+             validation_set=test_data[:100], print_progress=True)
+
+    # Save the neural net to file.
+    #nn.save('examples/mnist-30.nn')
+
+    # Load an existing neural net.
     # nn = NeuralNet.load('examples/mnist-100.nn')
 
     # Test the neural net.
