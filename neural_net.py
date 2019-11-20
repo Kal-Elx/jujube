@@ -6,7 +6,7 @@ class NeuralNet:
     def __init__(self, architecture: List[int], hl_act_func: ActivationFunction = ActivationFunction.SIGMOID,
                  ol_act_func: ActivationFunction = ActivationFunction.SIGMOID,
                  cost_func: CostFunction = CostFunction.QUADRATIC_COST,
-                 regularization_technique: RegularizationTechnique = None, suppress_warnings: bool = True):
+                 regularization_technique: RegularizationTechnique = None):
         """
         :param architecture: Number of neurons in each net. [input layer, hidden layer, ..., output layer].
         :param hl_act_func: Activation function for the hidden layers.

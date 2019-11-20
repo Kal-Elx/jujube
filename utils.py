@@ -121,4 +121,13 @@ def L2(w: float) -> float:
 
 
 def rescale(curr_min: float, curr_max: float, new_min: float, new_max: float, x: float) -> float:
+    """
+    Rescales a value to a new interval. Used for rescaling values in data sets.
+    :param curr_min: The current minimum value in the data set.
+    :param curr_max: The current maximum value in the data set.
+    :param new_min: The new minimum value in the data set.
+    :param new_max: The new maximum value in the data set.
+    :param x: Value to rescale.
+    :return: x rescaled.
+    """
     return (x * ((new_max - new_min) / (curr_max - curr_min))) + new_min

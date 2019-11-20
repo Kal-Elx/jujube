@@ -56,14 +56,14 @@ if __name__ == "__main__":
     filehandler.close()
 
     # Initialize the neural net.
-    nn = NeuralNet([784, 30, 10], cost_func=CostFunction.CROSS_ENTROPY, regularization_technique=RegularizationTechnique.L2)
+    nn = NeuralNet([784, 100, 10], cost_func=CostFunction.CROSS_ENTROPY, regularization_technique=RegularizationTechnique.L2)
 
     # Train the neural net.
-    nn.train(training_set=training_data[:1000], epochs=1000, mini_batch_size=10, learning_rate=3.0, early_stopping=True, limit=10,
-             validation_set=test_data[:100], print_progress=True)
+    nn.train(training_set=training_data, epochs=60, mini_batch_size=10, learning_rate=0.5, early_stopping=True, limit=10,
+             validation_set=test_data, regularization=5.0, momentum_coefficient=0.8, print_progress=True)
 
     # Save the neural net to file.
-    #nn.save('examples/mnist-30.nn')
+    nn.save('examples/mnist-100.nn')
 
     # Load an existing neural net.
     # nn = NeuralNet.load('examples/mnist-100.nn')
