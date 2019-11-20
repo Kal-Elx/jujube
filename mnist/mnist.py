@@ -50,13 +50,10 @@ def parse_mnist(input_file: str, output_file: str):
                 first = False
                 continue
 
-            x = np.array([[float(x)/255.0] for x in row[1:]])
-            y = np.zeros((10, 1))
+            x = np.array([[rescale(0.0, 255.0, 0.0, 1.0, float(x))] for x in row[1:]])
+            y = np.full((10, 1), 0.0)
             y[int(row[0])] = 1.0
             data.append((x, y))
-
-            if len(data) % 1000 == 0:
-                print(len(data))
 
     filehandler = gzip.open(output_file, 'wb')
     pickle.dump(data, filehandler)
@@ -66,12 +63,12 @@ def parse_mnist(input_file: str, output_file: str):
 if __name__ == "__main__":
 
     # Prepare the data set.
-    #parse_mnist('mnist_train.csv', 'training_data.pkl.gzip') # Files to large for git
+    parse_mnist('mnist_train.csv', 'training_data.pkl.gzip') # Files to large for git
     filehandler = gzip.open('training_data.pkl.gzip', 'rb')
     training_data = pickle.load(filehandler)
     filehandler.close()
 
-    #parse_mnist('mnist_test.csv', 'test_data.pkl.gzip') # Files to large for git
+    parse_mnist('mnist_test.csv', 'test_data.pkl.gzip') # Files to large for git
     filehandler = gzip.open('test_data.pkl.gzip', 'rb')
     test_data = pickle.load(filehandler)
     filehandler.close()
