@@ -1,7 +1,7 @@
 # Jujube
 Jujube is a library for doing machine learning using neural networks.
 
-For instructions on how to use the library see the wiki. If you find any bugs or if anything is unclear, do not hesitate to open an issue or to send me an email.
+For instructions on how to use the library see the wiki. If you find any bugs or if anything is unclear, do not hesitate to open an issue.
 
 ## Features
 ### Architecture
