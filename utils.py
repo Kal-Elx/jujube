@@ -130,4 +130,4 @@ def rescale(curr_min: float, curr_max: float, new_min: float, new_max: float, x:
     :param x: Value to rescale.
     :return: x rescaled.
     """
-    return (x * ((new_max - new_min) / (curr_max - curr_min))) + new_min
+    return ((x - curr_min) * ((new_max - new_min) / (curr_max - curr_min))) + new_min
