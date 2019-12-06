@@ -21,9 +21,9 @@ class NeuralNet:
         # Issue warnings.
         if hl_act_func == ActivationFunction.LINEAR:
             warnings.warn("Linear function is not recommended as activation function in hidden layers.")
-        if cost_func == CostFunction.CROSS_ENTROPY and ol_act_func == ActivationFunction.LINEAR:
+        if cost_func == CostFunction.CROSS_ENTROPY and ol_act_func != ActivationFunction.SIGMOID:
             warnings.warn("Cross-entropy is not recommended as cost function when activation function for the output "
-                          "layer is linear.")
+                          "layer is not sigmoid.")
 
         # Save information about the network´s architecture.
         self.architecture = architecture
